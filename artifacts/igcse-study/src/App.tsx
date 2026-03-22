@@ -42,6 +42,9 @@ type PageState =
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(() => {
+    return localStorage.getItem('alex-study-terms-accepted') === 'true';
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passkeyInput, setPasskeyInput] = useState('');
   const [passkeyError, setPasskeyError] = useState(false);
@@ -53,6 +56,11 @@ export default function App() {
     const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleAcceptTerms = () => {
+    localStorage.setItem('alex-study-terms-accepted', 'true');
+    setHasAcceptedTerms(true);
+  };
 
   const handlePasskeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,6 +124,101 @@ export default function App() {
             >
               Initializing
             </motion.h2>
+          </motion.div>
+        ) : !hasAcceptedTerms ? (
+          <motion.div
+            key="terms"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+          >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-md" />
+            <div className="relative z-10 w-full max-w-2xl rounded-3xl border border-yellow-500/20 bg-black/70 backdrop-blur-xl shadow-2xl flex flex-col max-h-[90vh]">
+              {/* Header */}
+              <div className="flex items-center gap-3 px-8 pt-8 pb-4 border-b border-white/10 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-500">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-display font-bold text-white">Terms and Conditions</h2>
+                  <p className="text-zinc-500 text-xs">Alex Study Resource Platform</p>
+                </div>
+              </div>
+
+              {/* Scrollable body */}
+              <div className="overflow-y-auto flex-1 px-8 py-6 space-y-6 text-sm text-zinc-300 leading-relaxed">
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">1. Introduction</h3>
+                  <p>Welcome to <span className="text-white font-medium">Alex Study Resource Platform</span>. By using this website or app, you agree to follow these Terms and Conditions. If you do not agree, please do not use our services.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">2. Use of Content (Creative Commons)</h3>
+                  <p className="mb-2">All study materials on this platform are shared under a Creative Commons license. This means:</p>
+                  <ul className="space-y-1 pl-4 border-l border-yellow-500/20">
+                    <li>You are free to use, share, and adapt the content for learning</li>
+                    <li>You must give proper credit to the original creators</li>
+                    <li>You may not use the content for commercial purposes unless stated otherwise</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">3. No Copyright Claim</h3>
+                  <p className="mb-2">We do not claim exclusive copyright over materials that are:</p>
+                  <ul className="space-y-1 pl-4 border-l border-yellow-500/20">
+                    <li>Shared under Creative Commons</li>
+                    <li>Contributed by users</li>
+                    <li>Publicly available for educational use</li>
+                  </ul>
+                  <p className="mt-2">However, proper credit must always be given.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">4. Acceptable Use</h3>
+                  <p className="mb-2">You agree not to:</p>
+                  <ul className="space-y-1 pl-4 border-l border-yellow-500/20">
+                    <li>Use the platform for cheating in exams</li>
+                    <li>Upload harmful or illegal content</li>
+                    <li>Damage or disrupt the system</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">5. Disclaimer</h3>
+                  <ul className="space-y-1 pl-4 border-l border-yellow-500/20">
+                    <li>Content is for educational purposes only</li>
+                    <li>We do not guarantee 100% accuracy</li>
+                    <li>We are not responsible for exam results</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">6. Changes to Terms</h3>
+                  <p>We may update these Terms at any time. Continued use of the platform means you accept the updated Terms.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-yellow-400 font-semibold mb-2 uppercase tracking-wide text-xs">7. Contact</h3>
+                  <p>For questions or concerns, contact us at <a href="mailto:orzure@gmail.com" className="text-yellow-400 hover:text-yellow-300 underline underline-offset-2 transition-colors">orzure@gmail.com</a></p>
+                </section>
+
+                <div className="pt-2 border-t border-white/10 text-center text-zinc-500 text-xs">
+                  Made with <span className="text-red-400">♥</span> by Alex
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-8 pb-8 pt-4 border-t border-white/10 flex-shrink-0">
+                <p className="text-zinc-500 text-xs text-center mb-4">By clicking <span className="text-white">I Agree</span>, you confirm you have read and accept these Terms and Conditions.</p>
+                <button
+                  onClick={handleAcceptTerms}
+                  className="w-full bg-yellow-500 text-black font-bold rounded-xl px-4 py-3 hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2"
+                >
+                  I Agree — Continue <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </motion.div>
         ) : !isAuthenticated ? (
           <motion.div
