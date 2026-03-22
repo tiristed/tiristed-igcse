@@ -91,6 +91,24 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `artifacts/igcse-study` (`@workspace/igcse-study`)
+
+React + Vite SPA with a cosmic/space dark theme. Features passkey auth (`alexdepzaivcl`), a black hole loading animation, and full IGCSE revision content for 5 subjects — all notes load as PDFs from Physics and Maths Tutor (PMT).
+
+**Subject data files** (all in `src/data/`):
+- `biologyData.ts` — 21 topics, PMT PDF links
+- `chemistryData.ts` — 14 topics, PMT PDF links
+- `physicsData.ts` — 6 topics, PMT PDF links
+- `mathsData.ts` — 9 topics, PMT PDF links
+- `computerScienceData.ts` — 10 topics, PMT PDF links
+- `mockData.ts` — interfaces + imports all subject files into `subjects[]`
+
+**PMT URL patterns:**
+- Biology/Chemistry/Physics/CS: `https://pmt.physicsandmathstutor.com/download/{Subject}/GCSE/Notes/CIE-IGCSE/{N}-{Topic}/Summary%20Notes%20-%20Topic%20{N}%20{Topic}%20-%20CAIE%20{Subject}%20IGCSE.pdf`
+- Maths: `https://pmt.physicsandmathstutor.com/download/Maths/GCSE/Notes/CIE-IGCSE/{N}-{Topic}/Summary%20Notes%20-%20{Topic}%20-%20CIE%20IGCSE%20Maths.pdf`
+
+Notes with `pdfUrl` render in an iframe; notes with `content` render as Markdown.
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
