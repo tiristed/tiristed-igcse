@@ -1,0 +1,239 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-gold-400: #FACC15;
+  --color-gold-500: #EAB308;
+  --color-gold-600: #CA8A04;
+  --color-gold-700: #A16207;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@utility perspective-1000 {
+  perspective: 1000px;
+}
+
+@utility preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@utility backface-hidden {
+  backface-visibility: hidden;
+}
+
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Deep Space Background */
+.bg-space {
+  position: fixed;
+  inset: 0;
+  background-color: #030303;
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 2px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+  background-size: 550px 550px, 350px 350px, 250px 250px;
+  background-position: 0 0, 40px 60px, 130px 270px;
+  z-index: -3;
+}
+
+/* Flying Stars Animation */
+.star {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.8), 0 0 20px 5px rgba(250, 204, 21, 0.4);
+  animation: suck-in cubic-bezier(0.5, 0, 1, 0.5) infinite;
+  opacity: 0;
+}
+
+@keyframes suck-in {
+  0% {
+    transform: translate(-50%, -50%) translate(var(--start-x), var(--start-y)) scale(1.5);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--end-x), var(--end-y)) scale(0.1);
+    opacity: 0;
+  }
+}
+
+/* Black Hole Container */
+.black-hole-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Accretion Disk (Tilted and Glowing) */
+.accretion-disk {
+  position: absolute;
+  width: 90vmin;
+  height: 90vmin;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(250, 204, 21, 0.05) 0%,
+    rgba(202, 138, 4, 0.3) 25%,
+    rgba(250, 204, 21, 0.6) 50%,
+    rgba(202, 138, 4, 0.3) 75%,
+    rgba(250, 204, 21, 0.05) 100%
+  );
+  filter: blur(25px);
+  animation: spin 20s linear infinite;
+  transform: rotateX(65deg);
+}
+
+.accretion-disk-inner {
+  position: absolute;
+  width: 60vmin;
+  height: 60vmin;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg,
+    rgba(250, 204, 21, 0.1) 0%,
+    rgba(255, 255, 255, 0.4) 25%,
+    rgba(250, 204, 21, 0.8) 50%,
+    rgba(255, 255, 255, 0.4) 75%,
+    rgba(250, 204, 21, 0.1) 100%
+  );
+  filter: blur(15px);
+  animation: spin 10s linear infinite reverse;
+  transform: rotateX(65deg);
+}
+
+.dust-ring {
+  position: absolute;
+  width: 75vmin;
+  height: 75vmin;
+  border-radius: 50%;
+  border: 2px dashed rgba(250, 204, 21, 0.3);
+  animation: spin 8s linear infinite reverse;
+  transform: rotateX(65deg);
+  z-index: 0;
+  filter: blur(4px);
+}
+
+/* Event Horizon (The dark center) */
+.event-horizon {
+  position: absolute;
+  width: 35vmin;
+  height: 35vmin;
+  background: #000;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 50px 15px rgba(250, 204, 21, 0.3),
+    inset 0 0 30px rgba(0,0,0,1);
+  z-index: 1;
+  animation: pulsate 4s ease-in-out infinite;
+}
+
+@keyframes pulsate {
+  0%, 100% { box-shadow: 0 0 50px 15px rgba(250, 204, 21, 0.3), inset 0 0 30px rgba(0,0,0,1); }
+  50% { box-shadow: 0 0 70px 25px rgba(250, 204, 21, 0.5), inset 0 0 30px rgba(0,0,0,1); }
+}
+
+/* Photon Ring (Bright ring around the event horizon) */
+.photon-ring {
+  position: absolute;
+  width: 36vmin;
+  height: 36vmin;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 245, 200, 0.8);
+  box-shadow: 0 0 20px 5px rgba(250, 204, 21, 0.5);
+  z-index: 2;
+  filter: blur(1px);
+}
+
+@keyframes spin {
+  from { transform: rotateX(65deg) rotateZ(0deg); }
+  to { transform: rotateX(65deg) rotateZ(360deg); }
+}
+
+/* Markdown Styles */
+.markdown-body h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-gold-500);
+}
+
+.markdown-body h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+
+.markdown-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-gold-400);
+}
+
+.markdown-body p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: #d4d4d8;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+  color: #d4d4d8;
+}
+
+.markdown-body li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.markdown-body img {
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+.markdown-body blockquote {
+  border-left: 4px solid var(--color-gold-500);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: #a1a1aa;
+  background: rgba(250, 204, 21, 0.05);
+  padding: 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
