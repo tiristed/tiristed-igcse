@@ -9,130 +9,190 @@ export const computerScienceSubject: Subject = {
     {
       id: 'cs-1',
       title: '1. Data Representation',
-      description: 'Binary, hexadecimal, denary, text, images, sound, data storage and compression.',
+      description: 'Binary, hexadecimal, denary conversions; text, images, sound; data storage and compression.',
       notes: [
         {
-          id: 'cs-pmt-1',
-          title: '1. Data Representation (PMT Summary Notes)',
+          id: 'cs-1-summary',
+          title: 'Summary Notes — Data Representation',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/1-Data-Representation/Summary%20Notes%20-%20Topic%201%20Data%20Representation%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/1-Data-Representation/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-1-defs',
+          title: 'Definitions — Data Representation',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/1-Data-Representation/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-2',
-      title: '2. Communication and Internet Technologies',
-      description: 'Data transmission, networks, the internet, the World Wide Web, cybersecurity.',
+      title: '2. Data Transmission',
+      description: 'Serial and parallel transmission; simplex, duplex; error detection; protocols; networks.',
       notes: [
         {
-          id: 'cs-pmt-2',
-          title: '2. Communication and Internet Technologies (PMT Summary Notes)',
+          id: 'cs-2-summary',
+          title: 'Summary Notes — Data Transmission',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/2-Communication-and-Internet-Technologies/Summary%20Notes%20-%20Topic%202%20Communication%20and%20Internet%20Technologies%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/2-Data-Transmission/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-2-defs',
+          title: 'Definitions — Data Transmission',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/2-Data-Transmission/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-3',
-      title: '3. Logic Gates and Logic Circuits',
-      description: 'Logic gates (AND, OR, NOT, NAND, NOR, XOR), truth tables, logic circuits.',
+      title: '3. Hardware',
+      description: 'CPU architecture; input/output devices; memory types; storage devices; fetch-execute cycle.',
       notes: [
         {
-          id: 'cs-pmt-3',
-          title: '3. Logic Gates and Logic Circuits (PMT Summary Notes)',
+          id: 'cs-3-summary',
+          title: 'Summary Notes — Hardware',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/3-Logic-Gates-and-Logic-Circuits/Summary%20Notes%20-%20Topic%203%20Logic%20Gates%20and%20Logic%20Circuits%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/3-Hardware/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-3-defs',
+          title: 'Definitions — Hardware',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/3-Hardware/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-4',
-      title: '4. Processor Fundamentals',
-      description: 'CPU architecture, fetch-execute cycle, registers, memory, instruction sets.',
+      title: '4. Software',
+      description: 'Operating systems; utility software; language translators; programming tools; system and application software.',
       notes: [
         {
-          id: 'cs-pmt-4',
-          title: '4. Processor Fundamentals (PMT Summary Notes)',
+          id: 'cs-4-summary',
+          title: 'Summary Notes — Software',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/4-Processor-Fundamentals/Summary%20Notes%20-%20Topic%204%20Processor%20Fundamentals%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/4-Software/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-4-defs',
+          title: 'Definitions — Software',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/4-Software/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-5',
-      title: '5. System Software',
-      description: 'Operating systems, utility software, language translators, programming tools.',
+      title: '5. The Internet and Its Uses',
+      description: 'The internet; the World Wide Web; digital currency; cybersecurity; threats and countermeasures.',
       notes: [
         {
-          id: 'cs-pmt-5',
-          title: '5. System Software (PMT Summary Notes)',
+          id: 'cs-5-summary',
+          title: 'Summary Notes — The Internet and Its Uses',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/5-System-Software/Summary%20Notes%20-%20Topic%205%20System%20Software%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/5-The-Internet-and-Its-Uses/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-5-defs',
+          title: 'Definitions — The Internet and Its Uses',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/5-The-Internet-and-Its-Uses/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-6',
-      title: '6. Security, Privacy and Data Integrity',
-      description: 'Data security, encryption, authentication, access control, malware.',
+      title: '6. Automated and Emerging Technologies',
+      description: 'Automated systems; robotics; artificial intelligence; machine learning; ethical issues.',
       notes: [
         {
-          id: 'cs-pmt-6',
-          title: '6. Security, Privacy and Data Integrity (PMT Summary Notes)',
+          id: 'cs-6-summary',
+          title: 'Summary Notes — Automated and Emerging Technologies',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/6-Security-Privacy-and-Data-Integrity/Summary%20Notes%20-%20Topic%206%20Security%20Privacy%20and%20Data%20Integrity%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/6-Automated-and-Emerging-Technologies/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-6-defs',
+          title: 'Definitions — Automated and Emerging Technologies',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/6-Automated-and-Emerging-Technologies/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-7',
-      title: '7. Ethics and Ownership',
-      description: 'Intellectual property, software licensing, copyright, moral and ethical issues.',
+      title: '7. Algorithm Design and Problem Solving',
+      description: 'Computational thinking; pseudocode; flowcharts; sorting and searching algorithms; testing.',
       notes: [
         {
-          id: 'cs-pmt-7',
-          title: '7. Ethics and Ownership (PMT Summary Notes)',
+          id: 'cs-7-summary',
+          title: 'Summary Notes — Algorithm Design and Problem Solving',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/7-Ethics-and-Ownership/Summary%20Notes%20-%20Topic%207%20Ethics%20and%20Ownership%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/7-Algorithm-Design-and-Problem-Solving/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-7-defs',
+          title: 'Definitions — Algorithm Design and Problem Solving',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/7-Algorithm-Design-and-Problem-Solving/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-8',
-      title: '8. Databases',
-      description: 'Database concepts, data types, relational databases, SQL, database design.',
+      title: '8. Programming',
+      description: 'Programming concepts; data structures; subroutines; file handling; object-oriented programming.',
       notes: [
         {
-          id: 'cs-pmt-8',
-          title: '8. Databases (PMT Summary Notes)',
+          id: 'cs-8-summary',
+          title: 'Summary Notes — Programming',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/8-Databases/Summary%20Notes%20-%20Topic%208%20Databases%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/8-Programming/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-8-defs',
+          title: 'Definitions — Programming',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/8-Programming/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-9',
-      title: '9. Algorithm Design and Problem Solving',
-      description: 'Computational thinking, pseudocode, flowcharts, sorting and searching algorithms.',
+      title: '9. Databases',
+      description: 'Database concepts; data types; relational databases; SQL queries; database design.',
       notes: [
         {
-          id: 'cs-pmt-9',
-          title: '9. Algorithm Design and Problem Solving (PMT Summary Notes)',
+          id: 'cs-9-summary',
+          title: 'Summary Notes — Databases',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/9-Algorithm-Design-and-Problem-Solving/Summary%20Notes%20-%20Topic%209%20Algorithm%20Design%20and%20Problem%20Solving%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/9-Databases/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-9-defs',
+          title: 'Definitions — Databases',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/9-Databases/Definitions.pdf'
         }
       ]
     },
     {
       id: 'cs-10',
-      title: '10. Programming',
-      description: 'Programming concepts, data structures, subroutines, file handling, object-oriented programming.',
+      title: '10. Boolean Logic',
+      description: 'Logic gates (AND, OR, NOT, NAND, NOR, XOR); truth tables; simplifying logic circuits.',
       notes: [
         {
-          id: 'cs-pmt-10',
-          title: '10. Programming (PMT Summary Notes)',
+          id: 'cs-10-summary',
+          title: 'Summary Notes — Boolean Logic',
           content: '',
-          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CIE-IGCSE/10-Programming/Summary%20Notes%20-%20Topic%2010%20Programming%20-%20CAIE%20Computer%20Science%20IGCSE.pdf'
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/10-Boolean/Summary%20Notes.pdf'
+        },
+        {
+          id: 'cs-10-defs',
+          title: 'Definitions — Boolean Logic',
+          content: '',
+          pdfUrl: 'https://pmt.physicsandmathstutor.com/download/Computer-Science/GCSE/Notes/CAIE/10-Boolean/Definitions.pdf'
         }
       ]
     }
