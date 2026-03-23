@@ -45,7 +45,7 @@ type PageState =
   | { view: 'topic'; subjectId: string; topicId: string }
   | { view: 'note'; subjectId: string; topicId: string; noteId: string }
   | { view: 'flashcards'; subjectId: string; topicId: string }
-  | { view: 'pastpapers'; subjectId: string; topicId: string };
+  | { view: 'pastpapers'; subjectId: string; topicId?: string };
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +58,7 @@ export default function App() {
 
   const [page, setPage] = useState<PageState>({ view: 'dashboard' });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showSubjectPicker, setShowSubjectPicker] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
@@ -305,15 +306,28 @@ export default function App() {
                   transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
                   className="fixed top-0 left-0 bottom-0 w-64 bg-black/90 backdrop-blur-xl border-r border-white/10 z-40 flex flex-col lg:hidden"
                 >
-                  <SidebarContent page={page} navigateTo={navigateTo} />
+                  <SidebarContent page={page} navigateTo={navigateTo} onOpenPastPapers={() => { setIsSidebarOpen(false); setShowSubjectPicker(true); }} />
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Desktop Sidebar */}
             <div className="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-black/90 backdrop-blur-xl border-r border-white/10 z-40 flex-col">
-              <SidebarContent page={page} navigateTo={navigateTo} />
+              <SidebarContent page={page} navigateTo={navigateTo} onOpenPastPapers={() => setShowSubjectPicker(true)} />
             </div>
+
+            {/* Subject Picker Modal */}
+            <AnimatePresence>
+              {showSubjectPicker && (
+                <SubjectPickerModal
+                  onClose={() => setShowSubjectPicker(false)}
+                  onSelectSubject={(subjectId) => {
+                    setShowSubjectPicker(false);
+                    navigateTo({ view: 'pastpapers', subjectId });
+                  }}
+                />
+              )}
+            </AnimatePresence>
 
             {/* Main Content */}
             <main className="lg:pl-64 pt-16 lg:pt-0 min-h-screen relative z-10">
@@ -327,7 +341,10 @@ export default function App() {
                   className="p-6 lg:p-10 max-w-5xl mx-auto"
                 >
                   {page.view === 'dashboard' && (
-                    <DashboardView onSelectSubject={(id) => navigateTo({ view: 'subject', subjectId: id })} />
+                    <DashboardView 
+                      onSelectSubject={(id) => navigateTo({ view: 'subject', subjectId: id })}
+                      onOpenPastPapers={() => setShowSubjectPicker(true)}
+                    />
                   )}
                   
                   {page.view === 'subject' && currentSubject && (
@@ -368,11 +385,13 @@ export default function App() {
                     />
                   )}
 
-                  {page.view === 'pastpapers' && currentSubject && currentTopic && (
+                  {page.view === 'pastpapers' && currentSubject && (
                     <PastPapersView 
                       subject={currentSubject}
-                      topic={currentTopic}
-                      onBack={() => navigateTo({ view: 'topic', subjectId: currentSubject.id, topicId: currentTopic.id })}
+                      topic={currentTopic || null}
+                      onBack={() => currentTopic
+                        ? navigateTo({ view: 'topic', subjectId: currentSubject.id, topicId: currentTopic.id })
+                        : navigateTo({ view: 'dashboard' })}
                     />
                   )}
                 </motion.div>
@@ -385,7 +404,7 @@ export default function App() {
   );
 }
 
-function SidebarContent({ page, navigateTo }: { page: PageState, navigateTo: (state: PageState) => void }) {
+function SidebarContent({ page, navigateTo, onOpenPastPapers }: { page: PageState, navigateTo: (state: PageState) => void, onOpenPastPapers: () => void }) {
   return (
     <>
       <div className="h-16 flex items-center gap-3 px-6 border-b border-white/10">
@@ -420,10 +439,65 @@ function SidebarContent({ page, navigateTo }: { page: PageState, navigateTo: (st
         <div className="pt-6 pb-2 px-3 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
           Tools
         </div>
-        <SidebarItem icon={<FileText />} label="Past Papers" active={false} onClick={() => {}} />
+        <SidebarItem icon={<ClipboardList />} label="Past Papers" active={page.view === 'pastpapers'} onClick={onOpenPastPapers} />
         <SidebarItem icon={<BrainCircuit />} label="Flashcards" active={false} onClick={() => {}} />
       </nav>
     </>
+  );
+}
+
+function SubjectPickerModal({ onClose, onSelectSubject }: { onClose: () => void, onSelectSubject: (id: string) => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center px-4"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.93, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.93, y: 20 }}
+        transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+        className="relative z-10 w-full max-w-lg rounded-3xl border border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+          <div>
+            <h2 className="text-lg font-display font-bold text-white">Past Papers</h2>
+            <p className="text-zinc-500 text-xs mt-0.5">Choose a subject to browse</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors">
+            <XIcon className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="p-4 grid grid-cols-1 gap-2">
+          {subjects.map(subject => {
+            const Icon = iconMap[subject.icon] || BookOpen;
+            const papers = pastPapersData[subject.id] || [];
+            const totalSessions = papers.reduce((acc, p) => acc + p.sessions.length, 0);
+            return (
+              <button
+                key={subject.id}
+                onClick={() => onSelectSubject(subject.id)}
+                className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.07] hover:border-yellow-500/30 text-left transition-all group"
+              >
+                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-yellow-500 flex-shrink-0 bg-yellow-500/10')}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-white group-hover:text-yellow-400 transition-colors">{subject.title}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{papers.length} papers · {totalSessions} sessions</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-yellow-500 transition-colors flex-shrink-0" />
+              </button>
+            );
+          })}
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -444,7 +518,7 @@ function SidebarItem({ icon, label, active, onClick }: { icon: React.ReactElemen
   );
 }
 
-function DashboardView({ onSelectSubject }: { onSelectSubject: (id: string) => void }) {
+function DashboardView({ onSelectSubject, onOpenPastPapers }: { onSelectSubject: (id: string) => void, onOpenPastPapers: () => void }) {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
@@ -486,19 +560,22 @@ function DashboardView({ onSelectSubject }: { onSelectSubject: (id: string) => v
         })}
       </div>
 
-      <div className="mt-8">
-        <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-8 flex flex-col items-center justify-center text-center space-y-4 max-w-2xl mx-auto">
-          <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mb-2">
-            <FileText className="w-8 h-8" />
+      <div className="mt-2">
+        <div className="rounded-2xl border border-yellow-500/20 bg-yellow-500/5 backdrop-blur-sm p-6 flex flex-col sm:flex-row items-center gap-6">
+          <div className="w-14 h-14 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-500 flex-shrink-0">
+            <ClipboardList className="w-7 h-7" />
           </div>
-          <div>
-            <h3 className="text-xl font-semibold">Past Papers</h3>
-            <p className="text-zinc-400 mt-2 max-w-md mx-auto">
-              Practice with real exam questions organized by topic. Test your knowledge and prepare for the final exams.
+          <div className="flex-1 text-center sm:text-left">
+            <h3 className="text-lg font-semibold text-white">Past Papers</h3>
+            <p className="text-zinc-400 text-sm mt-1">
+              CAIE IGCSE past papers from 2010–2024 with mark schemes. Biology, Chemistry, Physics, Maths &amp; Computer Science.
             </p>
           </div>
-          <button className="px-8 py-3 rounded-full bg-white text-black font-medium hover:bg-zinc-200 transition-colors mt-4">
-            Start Practicing
+          <button
+            onClick={onOpenPastPapers}
+            className="flex-shrink-0 px-6 py-2.5 rounded-full bg-yellow-500 text-black font-semibold hover:bg-yellow-400 transition-colors text-sm flex items-center gap-2"
+          >
+            Start Practicing <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -741,18 +818,18 @@ function FlashcardsView({ subject, topic, onBack }: { subject: Subject, topic: T
   );
 }
 
-function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: Topic, onBack: () => void }) {
+function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: Topic | null, onBack: () => void }) {
   const papers = pastPapersData[subject.id] || [];
   const [selectedPaperIdx, setSelectedPaperIdx] = useState(0);
-  const [openPdf, setOpenPdf] = useState<{ url: string; label: string; type: 'qp' | 'ms' } | null>(null);
+  const [activePdf, setActivePdf] = useState<{ url: string; label: string; type: 'qp' | 'ms' } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const currentPaper = papers[selectedPaperIdx];
   const filteredSessions = (currentPaper?.sessions || []).filter(s =>
     s.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Group sessions by year
   const groupedByYear = filteredSessions.reduce((acc: Record<string, PaperSession[]>, s) => {
     const m = s.label.match(/\d{4}/);
     const year = m ? m[0] : 'Other';
@@ -762,34 +839,111 @@ function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: T
   }, {});
   const sortedYears = Object.keys(groupedByYear).sort((a, b) => Number(b) - Number(a));
 
-  const encodePdfUrl = (url: string) => {
-    return `https://www.physicsandmathstutor.com/pdf-pages/?pdf=${encodeURIComponent(url)}`;
+  const Icon = iconMap[subject.icon] || BookOpen;
+
+  const openPdf = (url: string, label: string, type: 'qp' | 'ms') => {
+    setPdfLoading(true);
+    setActivePdf({ url, label, type });
   };
 
+  if (activePdf) {
+    const safeUrl = activePdf.url.replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
+    return (
+      <div className="flex flex-col" style={{ height: 'calc(100vh - 2.5rem)' }}>
+        {/* PDF Viewer Header */}
+        <div className="flex items-center gap-3 mb-3 flex-shrink-0">
+          <button
+            onClick={() => setActivePdf(null)}
+            className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to papers
+          </button>
+          <div className="h-4 w-px bg-white/10" />
+          <div className={cn(
+            'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold',
+            activePdf.type === 'qp' ? 'bg-blue-500/15 text-blue-300 border border-blue-500/20' : 'bg-green-500/15 text-green-300 border border-green-500/20'
+          )}>
+            {activePdf.type === 'qp' ? <ClipboardList className="w-3 h-3" /> : <CheckSquare className="w-3 h-3" />}
+            {activePdf.type === 'qp' ? 'Question Paper' : 'Mark Scheme'}
+          </div>
+          <span className="text-sm text-zinc-300 font-medium truncate">{activePdf.label} · {subject.title} {currentPaper?.paper}</span>
+          <div className="flex-1" />
+          <a
+            href={activePdf.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 text-xs font-medium transition-colors border border-white/10 flex-shrink-0"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            Open in new tab
+          </a>
+        </div>
+
+        {/* PDF Frame */}
+        <div className="flex-1 rounded-2xl overflow-hidden border border-white/10 bg-black/60 relative">
+          {pdfLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 z-10">
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}>
+                <Atom className="w-8 h-8 text-yellow-500" />
+              </motion.div>
+              <p className="text-zinc-400 text-sm">Loading PDF…</p>
+            </div>
+          )}
+          <iframe
+            key={safeUrl}
+            src={safeUrl}
+            className="w-full h-full border-0"
+            title={`${activePdf.label} ${activePdf.type}`}
+            onLoad={() => setPdfLoading(false)}
+            onError={() => setPdfLoading(false)}
+          />
+          {/* Fallback shown at bottom */}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
+            <a
+              href={activePdf.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pointer-events-auto flex items-center gap-1.5 px-4 py-2 rounded-full bg-black/80 border border-white/20 text-zinc-300 text-xs font-medium hover:bg-black hover:text-white transition-colors backdrop-blur-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Can't see it? Click to open PDF directly
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Back button */}
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to {topic.title}
+        {topic ? `Back to ${topic.title}` : 'Back to Dashboard'}
       </button>
 
       {/* Header */}
-      <header className="space-y-1">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
-            <ClipboardList className="w-5 h-5" />
-          </div>
-          <h1 className="text-3xl font-display font-bold tracking-tight text-white">
-            Past Papers
-          </h1>
+      <header className="flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-500 flex-shrink-0">
+          <Icon className="w-6 h-6" />
         </div>
-        <p className="text-zinc-400 text-sm">
-          {subject.title} — CAIE IGCSE · Question papers &amp; mark schemes
-        </p>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <h1 className="text-2xl font-display font-bold text-white">{subject.title}</h1>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-white/10">CAIE IGCSE</span>
+          </div>
+          <p className="text-zinc-400 text-sm">Past papers &amp; mark schemes · {papers.reduce((a, p) => a + p.sessions.length, 0)} sessions available</p>
+          {topic && (
+            <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-medium">
+              <BookOpen className="w-3 h-3" />
+              Studying: {topic.title}
+            </div>
+          )}
+        </div>
       </header>
 
       {papers.length === 0 ? (
@@ -799,65 +953,86 @@ function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: T
       ) : (
         <>
           {/* Paper tabs */}
-          <div className="flex flex-wrap gap-2">
-            {papers.map((p, i) => (
-              <button
-                key={p.paper}
-                onClick={() => { setSelectedPaperIdx(i); setSearchQuery(''); }}
-                className={cn(
-                  'px-4 py-2 rounded-full text-sm font-medium transition-all border',
-                  selectedPaperIdx === i
-                    ? 'bg-yellow-500 text-black border-yellow-500'
-                    : 'bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:border-white/20'
-                )}
-              >
-                {p.paper}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-2 border-b border-white/10 pb-4">
+            {papers.map((p, i) => {
+              const count = p.sessions.length;
+              return (
+                <button
+                  key={p.paper}
+                  onClick={() => { setSelectedPaperIdx(i); setSearchQuery(''); }}
+                  className={cn(
+                    'px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2',
+                    selectedPaperIdx === i
+                      ? 'bg-yellow-500 text-black border-yellow-500 shadow-lg shadow-yellow-500/20'
+                      : 'bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:border-white/20'
+                  )}
+                >
+                  {p.paper}
+                  <span className={cn(
+                    'text-[10px] px-1.5 py-0.5 rounded-full font-semibold',
+                    selectedPaperIdx === i ? 'bg-black/20 text-black' : 'bg-white/10 text-zinc-400'
+                  )}>{count}</span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Stats & search */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <p className="text-zinc-500 text-sm">
-              <span className="text-white font-medium">{currentPaper?.sessions.length || 0}</span> sessions available
-            </p>
+          {/* Search */}
+          <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Search by year or session…"
+              placeholder="Filter by year or session (e.g. 2023, November)…"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full sm:w-64 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
             />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="text-zinc-500 hover:text-white transition-colors">
+                <XIcon className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center gap-4 text-xs text-zinc-500">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-blue-400" />
+              Question Paper (QP)
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-green-400" />
+              Mark Scheme (MS)
+            </div>
           </div>
 
           {/* Sessions grouped by year */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {sortedYears.map(year => (
               <div key={year} className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden">
-                {/* Year header */}
-                <div className="px-5 py-3 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                  <span className="font-semibold text-white">{year}</span>
-                  <span className="text-xs text-zinc-500">{groupedByYear[year].length} session{groupedByYear[year].length !== 1 ? 's' : ''}</span>
+                <div className="px-5 py-3 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-white">{year}</span>
+                  </div>
+                  <span className="text-xs text-zinc-500 bg-white/5 px-2 py-0.5 rounded-full">{groupedByYear[year].length} session{groupedByYear[year].length !== 1 ? 's' : ''}</span>
                 </div>
-                {/* Sessions list */}
                 <div className="divide-y divide-white/5">
                   {groupedByYear[year].map((session, si) => (
                     <div
                       key={si}
                       className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-3 gap-3 hover:bg-white/[0.03] transition-colors"
                     >
-                      <span className="text-sm text-zinc-200 font-medium">{session.label}</span>
+                      <span className="text-sm text-zinc-200">{session.label}</span>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <button
-                          onClick={() => setOpenPdf({ url: session.qp, label: session.label, type: 'qp' })}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-medium transition-colors border border-blue-500/20"
+                          onClick={() => openPdf(session.qp, session.label, 'qp')}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-xs font-medium transition-all border border-blue-500/20 hover:border-blue-500/40 hover:shadow-sm hover:shadow-blue-500/10"
                         >
                           <ClipboardList className="w-3.5 h-3.5" />
                           Question Paper
                         </button>
                         <button
-                          onClick={() => setOpenPdf({ url: session.ms, label: session.label, type: 'ms' })}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-medium transition-colors border border-green-500/20"
+                          onClick={() => openPdf(session.ms, session.label, 'ms')}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs font-medium transition-all border border-green-500/20 hover:border-green-500/40 hover:shadow-sm hover:shadow-green-500/10"
                         >
                           <CheckSquare className="w-3.5 h-3.5" />
                           Mark Scheme
@@ -869,66 +1044,14 @@ function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: T
               </div>
             ))}
             {sortedYears.length === 0 && (
-              <div className="text-center text-zinc-500 py-12">No sessions match your search.</div>
+              <div className="text-center text-zinc-500 py-16">
+                <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p>No sessions match your filter.</p>
+              </div>
             )}
           </div>
         </>
       )}
-
-      {/* PDF Viewer Modal */}
-      <AnimatePresence>
-        {openPdf && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col bg-black/90 backdrop-blur-md"
-          >
-            {/* Modal header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-black/60 flex-shrink-0">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={cn(
-                  'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
-                  openPdf.type === 'qp' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
-                )}>
-                  {openPdf.type === 'qp' ? <ClipboardList className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wide">
-                    {openPdf.type === 'qp' ? 'Question Paper' : 'Mark Scheme'}
-                  </p>
-                  <p className="text-sm text-white font-medium truncate">{openPdf.label} · {subject.title} {currentPaper?.paper}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <a
-                  href={openPdf.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 text-xs font-medium transition-colors border border-white/10"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Open in new tab
-                </a>
-                <button
-                  onClick={() => setOpenPdf(null)}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors flex items-center justify-center border border-white/10"
-                >
-                  <XIcon className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            {/* PDF iframe */}
-            <div className="flex-1 overflow-hidden">
-              <iframe
-                src={encodePdfUrl(openPdf.url)}
-                className="w-full h-full border-0"
-                title={`${openPdf.label} ${openPdf.type.toUpperCase()}`}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
