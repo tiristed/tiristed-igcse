@@ -15,7 +15,13 @@ import {
   Atom,
   Calculator,
   Binary,
-  Lock
+  Lock,
+  Download,
+  Eye,
+  ExternalLink,
+  ClipboardList,
+  CheckSquare,
+  X as XIcon
 } from 'lucide-react';
 
 const iconMap: Record<string, React.ElementType> = {
@@ -27,6 +33,7 @@ const iconMap: Record<string, React.ElementType> = {
   BookOpen
 };
 import { subjects, Subject, Topic, Note } from './data/mockData';
+import { pastPapersData, PaperSession } from './data/pastPapersData';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -735,9 +742,34 @@ function FlashcardsView({ subject, topic, onBack }: { subject: Subject, topic: T
 }
 
 function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: Topic, onBack: () => void }) {
+  const papers = pastPapersData[subject.id] || [];
+  const [selectedPaperIdx, setSelectedPaperIdx] = useState(0);
+  const [openPdf, setOpenPdf] = useState<{ url: string; label: string; type: 'qp' | 'ms' } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const currentPaper = papers[selectedPaperIdx];
+  const filteredSessions = (currentPaper?.sessions || []).filter(s =>
+    s.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Group sessions by year
+  const groupedByYear = filteredSessions.reduce((acc: Record<string, PaperSession[]>, s) => {
+    const m = s.label.match(/\d{4}/);
+    const year = m ? m[0] : 'Other';
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(s);
+    return acc;
+  }, {});
+  const sortedYears = Object.keys(groupedByYear).sort((a, b) => Number(b) - Number(a));
+
+  const encodePdfUrl = (url: string) => {
+    return `https://www.physicsandmathstutor.com/pdf-pages/?pdf=${encodeURIComponent(url)}`;
+  };
+
   return (
-    <div className="space-y-8">
-      <button 
+    <div className="space-y-6">
+      {/* Back button */}
+      <button
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
       >
@@ -745,36 +777,158 @@ function PastPapersView({ subject, topic, onBack }: { subject: Subject, topic: T
         Back to {topic.title}
       </button>
 
-      <header className="space-y-2">
-        <h1 className="text-3xl font-display font-bold tracking-tight text-white">
-          Topic Questions
-        </h1>
-        <p className="text-zinc-400">
-          {topic.title}
+      {/* Header */}
+      <header className="space-y-1">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+            <ClipboardList className="w-5 h-5" />
+          </div>
+          <h1 className="text-3xl font-display font-bold tracking-tight text-white">
+            Past Papers
+          </h1>
+        </div>
+        <p className="text-zinc-400 text-sm">
+          {subject.title} — CAIE IGCSE · Question papers &amp; mark schemes
         </p>
       </header>
 
-      <div className="space-y-4">
-        {[1, 2, 3].map((num) => (
-          <div key={num} className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-zinc-400">Question {num}</span>
-              <span className="text-xs text-yellow-500 bg-yellow-500/10 px-3 py-1 rounded-full">{num * 2} marks</span>
-            </div>
-            <p className="text-white mb-6">
-              Describe the key concepts related to <span className="text-yellow-400">{topic.title}</span> and explain how they apply in a biological context.
-            </p>
-            <div className="flex gap-3">
-              <button className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors border border-white/10">
-                View Mark Scheme
+      {papers.length === 0 ? (
+        <div className="rounded-2xl border border-white/10 bg-black/40 p-12 text-center text-zinc-500">
+          No past papers available for this subject yet.
+        </div>
+      ) : (
+        <>
+          {/* Paper tabs */}
+          <div className="flex flex-wrap gap-2">
+            {papers.map((p, i) => (
+              <button
+                key={p.paper}
+                onClick={() => { setSelectedPaperIdx(i); setSearchQuery(''); }}
+                className={cn(
+                  'px-4 py-2 rounded-full text-sm font-medium transition-all border',
+                  selectedPaperIdx === i
+                    ? 'bg-yellow-500 text-black border-yellow-500'
+                    : 'bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:border-white/20'
+                )}
+              >
+                {p.paper}
               </button>
-              <button className="px-4 py-2 rounded-lg bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-500 text-sm font-medium transition-colors border border-yellow-500/20">
-                Worked Solution
-              </button>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+
+          {/* Stats & search */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="text-zinc-500 text-sm">
+              <span className="text-white font-medium">{currentPaper?.sessions.length || 0}</span> sessions available
+            </p>
+            <input
+              type="text"
+              placeholder="Search by year or session…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full sm:w-64 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
+            />
+          </div>
+
+          {/* Sessions grouped by year */}
+          <div className="space-y-4">
+            {sortedYears.map(year => (
+              <div key={year} className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden">
+                {/* Year header */}
+                <div className="px-5 py-3 bg-white/5 border-b border-white/10 flex items-center justify-between">
+                  <span className="font-semibold text-white">{year}</span>
+                  <span className="text-xs text-zinc-500">{groupedByYear[year].length} session{groupedByYear[year].length !== 1 ? 's' : ''}</span>
+                </div>
+                {/* Sessions list */}
+                <div className="divide-y divide-white/5">
+                  {groupedByYear[year].map((session, si) => (
+                    <div
+                      key={si}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-3 gap-3 hover:bg-white/[0.03] transition-colors"
+                    >
+                      <span className="text-sm text-zinc-200 font-medium">{session.label}</span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => setOpenPdf({ url: session.qp, label: session.label, type: 'qp' })}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-medium transition-colors border border-blue-500/20"
+                        >
+                          <ClipboardList className="w-3.5 h-3.5" />
+                          Question Paper
+                        </button>
+                        <button
+                          onClick={() => setOpenPdf({ url: session.ms, label: session.label, type: 'ms' })}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-medium transition-colors border border-green-500/20"
+                        >
+                          <CheckSquare className="w-3.5 h-3.5" />
+                          Mark Scheme
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {sortedYears.length === 0 && (
+              <div className="text-center text-zinc-500 py-12">No sessions match your search.</div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* PDF Viewer Modal */}
+      <AnimatePresence>
+        {openPdf && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col bg-black/90 backdrop-blur-md"
+          >
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-black/60 flex-shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={cn(
+                  'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
+                  openPdf.type === 'qp' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
+                )}>
+                  {openPdf.type === 'qp' ? <ClipboardList className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-zinc-500 uppercase tracking-wide">
+                    {openPdf.type === 'qp' ? 'Question Paper' : 'Mark Scheme'}
+                  </p>
+                  <p className="text-sm text-white font-medium truncate">{openPdf.label} · {subject.title} {currentPaper?.paper}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <a
+                  href={openPdf.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 text-xs font-medium transition-colors border border-white/10"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Open in new tab
+                </a>
+                <button
+                  onClick={() => setOpenPdf(null)}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors flex items-center justify-center border border-white/10"
+                >
+                  <XIcon className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            {/* PDF iframe */}
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src={encodePdfUrl(openPdf.url)}
+                className="w-full h-full border-0"
+                title={`${openPdf.label} ${openPdf.type.toUpperCase()}`}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
